@@ -156,36 +156,36 @@ void moveLeft()
     int mergeCount;
     int temp[4];
 
-    for(int j=0;j<4;j++) {
+//    int j = ThreadID;   
 
-        temp[0] = temp[1] = temp[2] = temp[3] = 0;
+    temp[0] = temp[1] = temp[2] = temp[3] = 0;
 
-        while (1) {
+    while (1) 
+    {
 
-            mergeCount = 0;
-
-            for (int i = 1; i < 4; i++) {
-                if (matrix[j][i] != 0&&matrix[j][i] == matrix[j][i - 1] && temp[i-1]!=1 && temp[i]!=1) {
-                    matrix[j][i-1] = 1+matrix[j][i];
-                    matrix[j][i]=0;
-                    temp[i-1] = 1;
-                    mergeCount++;
-                } else if (matrix[j][i] != 0 && matrix[j][i - 1] == 0) {
-                    matrix[j][i - 1] = matrix[j][i];
-                    matrix[j][i] = 0;
-                    mergeCount++;
-                }
-//                mergeCount--;
-
+        mergeCount = 0;
+        
+        for (int i = 1; i < 4; i++) 
+        {
+            if (matrix[j][i] != 0&&matrix[j][i] == matrix[j][i - 1] && temp[i-1]!=1 && temp[i]!=1) 
+            {
+                matrix[j][i-1] = 1+matrix[j][i];
+                matrix[j][i]=0;
+                temp[i-1] = 1;
+                mergeCount++;
+            } 
+            else if (matrix[j][i] != 0 && matrix[j][i - 1] == 0) 
+            {
+                matrix[j][i - 1] = matrix[j][i];
+                matrix[j][i] = 0;
+                mergeCount++;
             }
-
-//            drawMatrix();
-//            printf("\n");
-
-            if (mergeCount == 0) break;
-
         }
+
+        if (mergeCount == 0) break;
+
     }
+    
 }
 
 void rotatematrix() {
@@ -209,33 +209,32 @@ void moveUp()
     int mergeCount;
     int temp[4];
 
-    for(int j=0;j<4;j++) {
+//    for(int j=0;j<4;j++) {
 
-        temp[0] = temp[1] = temp[2] = temp[3] = 0;
+    temp[0] = temp[1] = temp[2] = temp[3] = 0;
 
-        while (1) {
-
-            mergeCount = 0;
-
-            for (int i = 1; i < 4; i++) {
-                if (matrix[i][j] != 0&&matrix[i][j] == matrix[i - 1][j] && temp[i-1]!=1&&temp[i]!=1) {
-                    matrix[i-1][j] = matrix[i][j]+1;
-                    matrix[i][j]=0;
-                    temp[i-1] = 1;
-                    mergeCount++;
-                } else if (matrix[i][j] != 0 && matrix[i - 1][j] == 0) {
-                    matrix[i - 1][j] = matrix[i][j];
-                    matrix[i][j] = 0;
-                    mergeCount++;
-                }
-//                mergeCount--;
-
+    while (1) {
+        
+        mergeCount = 0;
+        
+        for (int i = 1; i < 4; i++) {
+            if (matrix[i][j] != 0&&matrix[i][j] == matrix[i - 1][j] && temp[i-1]!=1&&temp[i]!=1) {
+                matrix[i-1][j] = matrix[i][j]+1;
+                matrix[i][j]=0;
+                temp[i-1] = 1;
+                mergeCount++;
+            } else if (matrix[i][j] != 0 && matrix[i - 1][j] == 0) {
+                matrix[i - 1][j] = matrix[i][j];
+                matrix[i][j] = 0;
+                mergeCount++;
             }
-
-            if (mergeCount == 0) break;
-
+//               mergeCount--;
         }
+
+        if (mergeCount == 0) break;
+
     }
+//    }
 }
 
 
@@ -272,7 +271,7 @@ void moveRight()
     rotatematrix();
     rotatematrix();
 }
-
+ 
 int main()
 {
     int k=1;
@@ -300,7 +299,7 @@ int main()
 
 
 
-    moveRight();
+    moveLeft();
 //    //printM();
 
     drawMatrix();
@@ -308,7 +307,7 @@ int main()
     printf("\n");
 
 //
-    moveUp();
+    moveDown();
 //
     drawMatrix();
 
