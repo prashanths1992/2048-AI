@@ -167,6 +167,7 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
     if(level == 10)
     {
         //terminal state
+        cout<<"Terminal........."<<endl;
         for(int i=0;i<n;i++)
             for(int j=0;j<4;j++)
                 for(int k=0;k<4;k++)
@@ -177,6 +178,7 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
     else if(type == 1)
     {
         //LRUD configuration
+        cout<<"Directions........."<<endl;
         int*** matrix1 = new int**[n*4];
         int* rv1 = new int[n*4];
 
@@ -214,9 +216,48 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
         {
             rv[i/4] = max(max(rv1[i],rv1[i+1]),max(rv1[i+2],rv1[i+3]));
         }
+        if(level==0){
+            if(rv1[0]>rv[1]){
+                if(rv1[0]>rv1[2]){
+                    if(rv1[0]>rv1[3]){
+                        rv[0]=0;
+                    }
+                    else{
+                        rv[0]=3;
+                    }
+                }
+                else{
+                    if(rv1[2]>rv1[3]){
+                        rv[0]=2;
+                    }
+                    else{
+                        rv[0]=3;
+                    }
+                }
+            }
+            else{
+                if(rv1[1]>rv1[2]){
+                    if(rv1[1]>rv1[3]){
+                        rv[0]=1;
+                    }
+                    else{
+                        rv[0]=3;
+                    }
+                }
+                else{
+                    if(rv1[2]>rv1[3]){
+                        rv[0]=2;
+                    }
+                    else{
+                        rv[0]=3;
+                    }
+                }
+            }
+        }
 
     }
     else {
+        cout<<"Chances........."<<endl;
         int count = 0;
         int temp[n];
 
@@ -340,7 +381,41 @@ int main() {
         }
     }
 
+    matrix[0][0][0] = 2;
+    matrix[0][0][1] = 2;
+    matrix[0][0][2] = 3;
+    matrix[0][0][3] = 4;
+
+    matrix[0][1][0] = 2;
+    matrix[0][1][1] = 2;
+    matrix[0][1][2] = 0;
+    matrix[0][1][3] = 0;
+
+    matrix[0][2][0] = 2;
+    matrix[0][2][1] = 0;
+    matrix[0][2][2] = 0;
+    matrix[0][2][3] = 0;
+
+    matrix[0][3][0] = 3;
+    matrix[0][3][1] = 4;
+    matrix[0][3][2] = 4;
+    matrix[0][3][3] = 5;
+    
+    cout<<"Boooooom"<<endl;
     runExpectiMaxSearch(matrix,1,1,0,rv);
+    
+    if(rv[0]==0){
+        cout<<"Left"<<endl;
+    }
+    if(rv[0]==1){
+        cout<<"Right"<<endl;
+    }
+    if(rv[0]==2){
+        cout<<"Up"<<endl;
+    }
+    if(rv[0]==3){
+        cout<<"Down"<<endl;
+    }
 
     return 0;
 }
