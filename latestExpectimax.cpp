@@ -164,7 +164,7 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
 {
 
 
-    if(level == 10)
+    if(level == 5)
     {
         //terminal state
         cout<<"Terminal........."<<endl;
@@ -188,10 +188,16 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
         {
 
             matrix1[i] = new int*[4];
+            matrix1[i+1] = new int*[4];
+            matrix1[i+2] = new int*[4];
+            matrix1[i+3] = new int*[4];
 
             for (int j=0;j<4;j++)
             {
                 matrix1[i][j] = new int[4];
+                matrix1[i+1][j] = new int[4];
+                matrix1[i+2][j] = new int[4];
+                matrix1[i+3][j] = new int[4];
 
                 for(int k=0;k<4;k++)
                 {
@@ -287,23 +293,29 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
         int i = 0, k = 0;
 
         for (int l = 0; l < n; l++) {
+            int flag=0;
             for (int i = 0; i < temp[l]; i++) {
                 int index = i;
                 if (l != 0) {
                     index += temp[l - 1];
                 }
                 matrix1[index] = new int *[4];
+                flag=0;
                 for (int j = 0; j < 4; j++) {
 
                     matrix1[index][j] = new int[4];
 
                     for (int k = 0; k < 4; k++) {
 
-                        if (matrix[i][j][k] == 0) {
+                        if (matrix[l][j][k] == 0 and flag==0) {
                             matrix1[index][j][k] = 1;
                             matrix[l][j][k] = -1;
+                            flag==1;
                         } else {
                             matrix1[index][j][k] = matrix[l][j][k];
+                            if(matrix[l][j][k] == -1){
+                                matrix[l][j][k] == 0;
+                            }
                         }
 
                     }
@@ -400,10 +412,10 @@ int main() {
     matrix[0][3][1] = 4;
     matrix[0][3][2] = 4;
     matrix[0][3][3] = 5;
-    
+
     cout<<"Boooooom"<<endl;
     runExpectiMaxSearch(matrix,1,1,0,rv);
-    
+
     if(rv[0]==0){
         cout<<"Left"<<endl;
     }
