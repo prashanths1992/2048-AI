@@ -4,6 +4,146 @@
 
 using namespace std;
 
+string reset = "\u001b[0m";
+
+unsigned GetNumberOfDigits (uint64_t i);
+
+string getColor(int value)
+{
+    switch(value%10)
+    {
+
+        case 1:
+            return "\u001b[37m\u001b[43;1m";
+
+        case 2:
+            return "\u001b[37m\u001b[44;1m";
+
+        case 3:
+            return "\u001b[37m\u001b[45;1m";
+
+        case 4:
+            return "\u001b[37m\u001b[46;1m";
+
+        case 5:
+            return "\u001b[37m\u001b[40;1m";
+
+        case 6:
+            return "\u001b[37m\u001b[41m";
+
+        case 7:
+            return "\u001b[37m\u001b[41;1m";
+
+        case 8:
+            return "\u001b[37m\u001b[42;1m";
+
+        case 9:
+            return "\u001b[37m\u001b[42m";
+
+//        case 0:
+//            return "\u001b[37m\u001b[45m";
+
+        default:
+            return "\u001b[30m\u001b[47m";
+
+    }
+
+}
+
+string padNumber(int digits,uint64_t n,int empty)
+{
+
+    if(empty==0) {
+
+        string ret="";
+        digits+=2;
+
+        while (digits--) {
+            ret+=" ";
+        }
+
+        return ret;
+    }
+
+    string s="";
+
+    int padValue = digits - GetNumberOfDigits(n);
+
+
+    if(n!=1)
+    {
+        while(n)
+        {
+            s = char((n%10)+48)+s;
+            n/=10;
+        }
+    }
+    else
+    {
+        s=".";
+    }
+
+    if(padValue!=1)
+    {
+        while(padValue-->0)
+        {
+            s=" "+s;
+            if(padValue!=0)
+            {
+                s+=" ";
+            }
+            padValue--;
+        }
+    }
+    else
+    {
+        s = " "+s;
+    }
+
+    return " "+s+" ";
+
+}
+
+
+unsigned GetNumberOfDigits (uint64_t i)
+{
+    return i > 0 ? (int) log10 ((double) i) + 1 : 1;
+}
+
+
+void drawMatrix(int** matrix)
+{
+
+    int pad = 1;
+
+    for(int i=0;i<4;i++)
+        for(int j=0;j<4;j++)
+            pad = max(pad,matrix[i][j]);
+    uint64_t  val = pow(2,pad);
+
+    int digits = GetNumberOfDigits(val);
+    digits = digits%2==0?digits+1:digits;
+
+    for(int i=0;i<4;i++)
+    {
+        for(int j=0;j<4;j++)
+        {
+            printf("%s%s%s",getColor(matrix[i][j]).c_str(),padNumber(digits,pow(2,matrix[i][j]),0).c_str(),reset.c_str());
+        }
+        printf("\n");
+        for(int j=0;j<4;j++)
+        {
+            printf("%s%s%s",getColor(matrix[i][j]).c_str(),padNumber(digits,pow(2,matrix[i][j]),1).c_str(),reset.c_str());
+        }
+        printf("\n");
+        for(int j=0;j<4;j++)
+        {
+            printf("%s%s%s",getColor(matrix[i][j]).c_str(),padNumber(digits,pow(2,matrix[i][j]),0).c_str(),reset.c_str());
+        }
+        printf("\n");
+    }
+
+}
 
 void moveLeft(int** matrix)
 {
@@ -145,13 +285,13 @@ void moveDown(int** matrix)
 }
 
 
-void printMatrix(int*** matrix)
+void printMatrix(int** matrix)
 {
     for(int i=0;i<4;i++) {
         for (int j = 0; j < 4; j++) {
 
             if(matrix[i][j]!=0)
-                cout<<pow(2,matrix[0][i][j])<<" ";
+                cout<<pow(2,matrix[i][j])<<"/"<<matrix[i][j]<< " ";
             else
                 cout<<0<<" ";
 
@@ -163,15 +303,40 @@ void printMatrix(int*** matrix)
 void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
 {
 
-
-    if(level == 5)
-    {
+    cout<<n<<endl;
+    if(level == 3) {
         //terminal state
         cout<<"Terminal........."<<endl;
-        for(int i=0;i<n;i++)
-            for(int j=0;j<4;j++)
-                for(int k=0;k<4;k++)
-                    rv[i]+=matrix[i][j][k];
+
+        for (int i = 0; i < n; i++) {
+            int penalty = 0;
+            int free_tiles=0;
+            for (int j = 0; j < 4; j++) {
+                for (int k = 0; k < 4; k++) {
+                    if(matrix[i][j][k]!=0) {
+                        if (j - 1 >= 0) {
+                            penalty += pow(2, abs(matrix[i][j][k] - matrix[i][j - 1][k]));
+                        }
+                        if (j + 1 <= 3) {
+                            penalty += pow(2, abs(matrix[i][j][k] - matrix[i][j + 1][k]));
+                        }
+                        if (k - 1 >= 0) {
+                            penalty += pow(2, abs(matrix[i][j][k] - matrix[i][j][k - 1]));
+                        }
+                        if (k + 1 <= 3) {
+                            penalty += pow(2, abs(matrix[i][j][k] - matrix[i][j][k + 1]));
+                        }
+                        rv[i] += pow(2, matrix[i][j][k]) * (6 - (k + j));
+                    }
+                    if(matrix[i][j][k]==0){
+                        free_tiles++;
+                    }
+                }
+            }
+            rv[i]-=penalty;
+            rv[i]+=(free_tiles*5);
+        }
+        cout<<"Terminal........."<<endl;
 
     }
 
@@ -208,6 +373,7 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
                 }
             }
 
+            cout<<"Boom"<<endl;
             moveLeft(matrix1[i]);
             moveRight(matrix1[i+1]);
             moveUp(matrix1[i+2]);
@@ -218,10 +384,11 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
         runExpectiMaxSearch(matrix1,4*n,2,level+1,rv1);
 
 
-        for(int i=0;i<n;i+=4)
+        for(int i=0;i<4*n;i+=4)
         {
             rv[i/4] = max(max(rv1[i],rv1[i+1]),max(rv1[i+2],rv1[i+3]));
         }
+        cout<<level<<"........."<<endl;
         if(level==0){
             if(rv1[0]>rv[1]){
                 if(rv1[0]>rv1[2]){
@@ -261,28 +428,44 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
             }
         }
 
+
+
     }
     else {
         cout<<"Chances........."<<endl;
-        int count = 0;
+        int n_count[n];
+        int count=0;
         int temp[n];
 
         for (int i = 0; i < n; i++) {
+            int num=0;
+            temp[i]=0;
+            n_count[i]=0;
             for (int j = 0; j < 4; j++) {
                 for (int k = 0; k < 4; k++) {
-                    if (matrix[i][j][k] == 0)
+                    if (matrix[i][j][k] == 0) {
                         count++;
-
+                        num++;
+                    }
                 }
             }
 
-            if (i == 0)
+            if (i == 0){
                 temp[0] = count;
-            else
-                temp[i] = count - temp[i - 1];
+                n_count[0] = count;
+            }
+            else{
+                temp[i] = num;
+                n_count[i] = count;
+            }
+
 
         }
+        for(int i=0;i<n;i++)
+            cout<<temp[i]<<" ";
+        cout<<endl;
 
+        cout<<count<<"count"<<endl;
         int ***matrix1 = new int **[count];
 
         int *rv1 = new int[count];
@@ -297,9 +480,13 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
             for (int i = 0; i < temp[l]; i++) {
                 int index = i;
                 if (l != 0) {
-                    index += temp[l - 1];
+                    index += n_count[l - 1];
                 }
+                cout<<index<<" "<<endl;
                 matrix1[index] = new int *[4];
+                if(matrix1[index]==NULL){
+                    cout<<"Memory Allocation Failure"<<endl;
+                }
                 flag=0;
                 for (int j = 0; j < 4; j++) {
 
@@ -320,7 +507,8 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
 
                     }
                 }
-
+                printMatrix(matrix[i]);
+                cout<<" "<<endl;
             }
 
         }
@@ -348,23 +536,78 @@ void runExpectiMaxSearch(int*** matrix,int n,int type,int level,int* rv)
 
         runExpectiMaxSearch(matrix1, count, 1, level + 1, rv1);
 
-        for (int l = 0; l < n; l++) {
-            for (int i = 0; i < temp[l]; i++) {
-                int index = i;
-                if (l != 0) {
-                    index += temp[l - 1];
-                }
-                rv[l] += rv1[index];
+        cout<<level<<"dfg........."<<endl;
+        for(int i=0;i<count;i++)
+            cout<<rv1[i]<<" ";
+        cout<<endl;
+//        for (int l = 0; l < n; l++) {
+//            for (int i = 0; i < temp[l]; i++) {
+//                int index = i;
+//                cout<<i<<" "<<l<<endl;
+//                if (l != 0) {
+//                    index += temp[l - 1];
+//                }
+//                rv[l] += rv1[index];
+//
+//            }
+//
+//            rv[l] /= temp[l];
+//
+//        }
+        int l,p;
+        l=k=p=0;
 
+        for(int i=0;i<n;i++)
+            cout<<temp[i]<<" ";
+        cout<<endl;
+
+        for(l=0;l<n;l++)
+        {
+            int q=temp[l];
+            if(q==0){
+                rv[k]=0;
+                k++;
+                continue;
             }
-
-            rv[l] /= temp[l];
-
+            while(q--)
+            {
+                rv[k]+=rv1[p++];
+            }
+            rv[k]/=temp[l];
+            cout<<rv[k]<<" ";
+            k++;
         }
+
+
+        cout<<level<<"asgnh........."<<endl;
     }
 
 
 
+}
+
+int placerandomtile(int** matrix){
+    int place=0;
+    int random_pos[16];
+    for(int i=0;i<4;i++){
+        for(int j=0;j<4;j++){
+            if(matrix[i][j]==0){
+                random_pos[place]=i*4+j;
+                place++;
+            }
+        }
+    }
+    if(place==0){
+        return 1;
+    }
+    int random = rand()%place;
+    place = random_pos[random];
+    int x = place/4;
+    int y = place%4;
+    int tiles[10] = {1,1,1,1,1,1,1,1,2,2};
+    random = rand()%10;
+    matrix[x][y]=1;//tiles[random];
+    return 0;
 }
 
 int main() {
@@ -394,39 +637,64 @@ int main() {
     }
 
     matrix[0][0][0] = 2;
-    matrix[0][0][1] = 2;
-    matrix[0][0][2] = 3;
-    matrix[0][0][3] = 4;
+    matrix[0][0][1] = 1;
+    matrix[0][0][2] = 1;
+    matrix[0][0][3] = 1;
 
-    matrix[0][1][0] = 2;
+    matrix[0][1][0] = 3;
     matrix[0][1][1] = 2;
-    matrix[0][1][2] = 0;
-    matrix[0][1][3] = 0;
+    matrix[0][1][2] = 2;
+    matrix[0][1][3] = 2;
 
-    matrix[0][2][0] = 2;
-    matrix[0][2][1] = 0;
-    matrix[0][2][2] = 0;
-    matrix[0][2][3] = 0;
+    matrix[0][2][0] = 4;
+    matrix[0][2][1] = 4;
+    matrix[0][2][2] = 3;
+    matrix[0][2][3] = 3;
 
-    matrix[0][3][0] = 3;
-    matrix[0][3][1] = 4;
+    matrix[0][3][0] = 6;
+    matrix[0][3][1] = 2;
     matrix[0][3][2] = 4;
-    matrix[0][3][3] = 5;
+    matrix[0][3][3] = 1;
 
-    cout<<"Boooooom"<<endl;
-    runExpectiMaxSearch(matrix,1,1,0,rv);
+    //cout<<"Boooooom"<<endl;
+    cout<<endl;
 
-    if(rv[0]==0){
-        cout<<"Left"<<endl;
-    }
-    if(rv[0]==1){
-        cout<<"Right"<<endl;
-    }
-    if(rv[0]==2){
-        cout<<"Up"<<endl;
-    }
-    if(rv[0]==3){
-        cout<<"Down"<<endl;
+    int times=250;
+    while(times--) {
+
+        cout<<times<<endl;
+        drawMatrix(matrix[0]);
+
+        runExpectiMaxSearch(matrix, 1, 1, 0, rv);
+
+        if (rv[0] == 0) {
+            cout << "Left" << endl;
+            moveLeft(matrix[0]);
+            drawMatrix(matrix[0]);
+            cout << endl;
+
+        }
+        if (rv[0] == 1) {
+            cout << "Right" << endl;
+            moveRight(matrix[0]);
+            drawMatrix(matrix[0]);
+            cout << endl;
+        }
+        if (rv[0] == 2) {
+            cout << "Up" << endl;
+            moveUp(matrix[0]);
+            drawMatrix(matrix[0]);
+            cout << endl;
+        }
+        if (rv[0] == 3) {
+            cout << "Down" << endl;
+            moveDown(matrix[0]);
+            drawMatrix(matrix[0]);
+            cout << endl;
+        }
+
+        if(placerandomtile(matrix[0])==1)
+            break;
     }
 
     return 0;
