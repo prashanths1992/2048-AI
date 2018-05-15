@@ -1,0 +1,13 @@
+The following project has two executables.
+
+Serial Version of the game 2048-Serial.cpp
+Parallel version of the game 2048-Cuda.cpp
+
+To Run the game:
+./make
+
+The serial version of the game can be played from a Linux terminal only because of ANSI color coded output.
+./2048-Serial
+
+The parallel version needs the GPU Infrastructure and therefore cannot be just run on the Just terminal.
+./2048-Cuda
