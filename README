@@ -3,11 +3,19 @@ The following project has two executables.
 Serial Version of the game 2048-Serial.cpp
 Parallel version of the game 2048-Cuda.cu
 
-To Run the game:
-./make
+To Run the Serial version of the game:
+1: ./make
 
 The serial version of the game can be played from a Linux terminal only because of ANSI color coded output.
-./2048-Serial
+2: ./2048-Serial
 
 The parallel version needs the GPU Infrastructure and therefore cannot be just run on the Just terminal.
-./2048-Cuda
+
+To Compile use the following command:
+
+1: nvcc -arch=sm_35 -rdc=true 2048-Cuda.cu
+
+2: Run 2048-Cuda.exe (our code was compiled on windows / you will get a relative executable ) 
+
+
+
