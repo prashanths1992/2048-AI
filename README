@@ -1,7 +1,7 @@
 The following project has two executables.
 
 Serial Version of the game 2048-Serial.cpp
-Parallel version of the game 2048-Cuda.cpp
+Parallel version of the game 2048-Cuda.cu
 
 To Run the game:
 ./make
